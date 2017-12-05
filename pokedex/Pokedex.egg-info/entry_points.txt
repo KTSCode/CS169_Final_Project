@@ -1,3 +1,0 @@
-[console_scripts]
-pokedex = pokedex.main:setuptools_entry
-
