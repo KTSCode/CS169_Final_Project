@@ -1,6 +1,7 @@
 import csv
 from math import ceil
 from random import randint
+import numpy as np
 
 # Define dictionary of Pokemon
 Pokemon = {0: {'name': '', 'type1': 0, 'type2': 0,
@@ -16,16 +17,16 @@ Effectiveness = [[1 for x in range(typeNum)] for y in range(typeNum)]
 
 
 # Add names to pokemon dict
-with open('pokemon.csv', 'rb') as csvfile:
-  reader = csv.DictReader(csvfile)
+with open('pokemon.csv', 'r') as csvfile:
+  reader = csv.DictReader(csvfile   )
   for row in reader:
     if row['is_default'] == '1':
       Pokemon[int(row['id'])] = {'name': row['identifier'], 'type1': 0, 'type2': 0,
         'Attack': 1, 'Defense': 1, 'Special Attack': 1, 'Special Defense': 1, 'HP': 1,
-        'Moves': [] }
+        'Moves': set([]) }
 
 # Add types to pokemon dict
-with open('pokemon_types.csv', 'rb') as csvfile:
+with open('pokemon_types.csv', 'r') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
     id = int(row['pokemon_id'])
@@ -36,7 +37,7 @@ with open('pokemon_types.csv', 'rb') as csvfile:
         Pokemon[id]['type2'] = int(row['type_id'])
 
 # Add stats to pokemon dict
-with open('pokemon_stats.csv', 'rb') as csvfile:
+with open('pokemon_stats.csv', 'r') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
     id = int(row['pokemon_id'])
@@ -53,15 +54,15 @@ with open('pokemon_stats.csv', 'rb') as csvfile:
         Pokemon[id]['Special Defense'] = int(row['base_stat'])
 
 # Add moves to pokemon dict
-with open('pokemon_moves.csv', 'rb') as csvfile:
+with open('pokemon_moves1.csv', 'r') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
     ID = int(row['pokemon_id'])
     if ID < len(Pokemon):
-      Pokemon[ID]['Moves'].append(int(row['move_id']))
+      Pokemon[ID]['Moves'].add(int(row['move_id']))
 
 # Add moves to Moves dict
-with open('moves.csv', 'rb') as csvfile:
+with open('moves.csv', 'r') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
     power = 0 if row['power'] == '' else int(row['power'])
@@ -73,7 +74,7 @@ with open('moves.csv', 'rb') as csvfile:
       'type': type_id, 'pp': pp, 'damage': damage}
 
 # Add Type efficacy to Effectiveness matrix
-with open('type_efficacy.csv', 'rb') as csvfile:
+with open('type_efficacy.csv', 'r') as csvfile:
   reader = csv.DictReader(csvfile)
   for row in reader:
     damage_type = int(row['damage_type_id'])
@@ -122,13 +123,13 @@ def hitsToKO(atk_pkm, def_pkm, move):
     defense = def_pkm['Special Defense']
     attack = atk_pkm['Special Attack']
   else:
-    return 1000 # notfound moves and status moves will never kill a pokemon
+    return np.inf # notfound moves and status moves will never kill a pokemon
 
   level = 100
   # Calc Damage
   damage = damageCalc(level, move['power'], attack, defense, mod)
   if damage == 0:
-    return 1000
+    return np.inf
   # Assuming all pokemons IVs are 31 and EVs are 0
   hp = ((def_pkm['HP'] * 2 + 31 ) * level / 100) + 10 + level
 
@@ -143,16 +144,28 @@ def hitsToKO(atk_pkm, def_pkm, move):
 
 # Hits Matrix
 def hitMatrixMaker(team, atk_pkm):
-  ht = 6
+  ht = len(team)
+  #for move in atk_pkm['Moves']:
+  #  print(move,Moves[move]['power'])
+  atk_pkm['Moves']= set([move for move in atk_pkm['Moves'] if Moves[move]['power']>0])
+
   wt = len(atk_pkm['Moves'])
   HitsMatrix = [[100 for x in range(wt)] for y in range(ht)]
-  for i in range(6):
-    for j in range(len(atk_pkm['Moves'])):
-      HitsMatrix[i][j] = hitsToKO(atk_pkm, team[i], Moves[atk_pkm['Moves'][j]])
+  for i in range(ht):
+    for j in range(wt):
+      HitsMatrix[i][j] = hitsToKO(atk_pkm, team[i], Moves[list(atk_pkm['Moves'])[j]])
   return HitsMatrix
+def genRandomTeam(max_pokemon=151, num =6):
+    ids = [randint(1,max_pokemon) for i in range(num)]
+    Team = [Pokemon[id] for id in ids]
+    return ids, Team
+def genRandom(max_pokemon=151):
+    num = randint(1,max_pokemon)
+    return num, Pokemon[num]
 
-Team = [Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)],
-    Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)]]
-
-print hitMatrixMaker(Team, Pokemon[randint(1,800)])
-  # print hitsToKO(Pokemon[randint(1,800)], Pokemon[randint(1,800)], Moves[randint(1,600)])
+def randomArray(max_pokemon=151):
+    team_ids, Team = genRandomTeam(max_pokemon)
+    atk_id, Pokem = genRandom(max_pokemon)
+    return atk_id, team_ids, hitMatrixMaker(Team,Pokem)
+#print(np.array(hitMatrixMaker(Team, atk_pkm)))
+  # print hitsToKO(Pokemon[randint(1,max_pokemon)], Pokemon[randint(1,max_pokemon)], Moves[randint(1,600)])
