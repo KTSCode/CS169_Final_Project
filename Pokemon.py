@@ -142,17 +142,17 @@ def hitsToKO(atk_pkm, def_pkm, move):
   return ceil(float(hp)/float(damage))
 
 # Hits Matrix
-def hitMatrixMaker(team, atk_pkm):
-  ht = 6
+def hitMatrixMaker(team, atk_pkm, team_num):
+  ht = team_num
   wt = len(atk_pkm['Moves'])
   HitsMatrix = [[100 for x in range(wt)] for y in range(ht)]
-  for i in range(6):
+  for i in range(team_num):
     for j in range(len(atk_pkm['Moves'])):
       HitsMatrix[i][j] = hitsToKO(atk_pkm, team[i], Moves[atk_pkm['Moves'][j]])
   return HitsMatrix
+#
+#Team = [Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)],
+#    Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)]]
 
-Team = [Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)],
-    Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)], Pokemon[randint(1,800)]]
-
-print hitMatrixMaker(Team, Pokemon[randint(1,800)])
+#print hitMatrixMaker(Team, Pokemon[randint(1,800)])
   # print hitsToKO(Pokemon[randint(1,800)], Pokemon[randint(1,800)], Moves[randint(1,600)])
