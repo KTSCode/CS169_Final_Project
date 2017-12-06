@@ -37,7 +37,7 @@ def make_EQ(I,J):
     tests.append(temp)
     values.append(6)
     matrix = turn_to_matrix(tests)
-    print(matrix.shape,len(values))
+    #print(matrix.shape,len(values))
     return matrix, values
 def make_UB(I,J):
     tests = []
@@ -60,7 +60,7 @@ def make_UB(I,J):
     return matrix,values
 def turn_to_matrix(ls):
     lens = [len(row) for row in ls]
-    print(lens)
+    #print(lens)
     matrix = np.zeros((len(ls),max(lens)))
     for i, row in enumerate(ls):
         matrix[i,:lens[i]]=row
@@ -73,14 +73,14 @@ def make_bounds(I,J):
 
 def make_solver(v):
     v = np.array(v)
-    print(v,v.shape)
+    #print(v,v.shape)
     I,J = v.shape
     A_eq, b_eq = make_EQ(I,J)
     A_ub, b_ub = make_UB(I,J)
-    print("eq:",A_eq.shape,"ub",A_ub.shape)
+    #print("eq:",A_eq.shape,"ub",A_ub.shape)
     bounds = make_bounds(I,J)
     v_f = np.zeros(I*J+2*J)
-    print("v_f",v_f.shape)
+    #print("v_f",v_f.shape)
     v_f[:I*J] = v.flatten()
     ans = opt.linprog(v_f,A_ub,b_ub,A_eq,b_eq,bounds)
     x = np.array(ans.x[:I*J]).reshape(v.shape)
@@ -90,7 +90,7 @@ def make_solver(v):
 
 def get_results(v, team_ids,atk_id):
     success = True
-    msg = ""
+    msg =
     try:
         success, x,v,k,c= make_solver(v)
         selected = ((x+0.1)>1).astype(int)
