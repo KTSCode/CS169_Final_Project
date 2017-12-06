@@ -90,7 +90,7 @@ def make_solver(v):
 
 def get_results(v, team_ids,atk_id):
     success = True
-    msg =
+    msg = ""
     try:
         success, x,v,k,c= make_solver(v)
         selected = ((x+0.1)>1).astype(int)
