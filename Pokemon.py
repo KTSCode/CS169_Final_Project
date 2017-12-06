@@ -60,6 +60,8 @@ with open('pokemon_moves1.csv', 'r') as csvfile:
     ID = int(row['pokemon_id'])
     if ID < len(Pokemon):
       Pokemon[ID]['Moves'].add(int(row['move_id']))
+  for pokemon_id in Pokemon:
+      Pokemon[ID]['Moves']=list(Pokemon[ID]['Moves'])
 
 # Add moves to Moves dict
 with open('moves.csv', 'r') as csvfile:
@@ -147,7 +149,7 @@ def hitMatrixMaker(team, atk_pkm):
   ht = len(team)
   #for move in atk_pkm['Moves']:
   #  print(move,Moves[move]['power'])
-  atk_pkm['Moves']= set([move for move in atk_pkm['Moves'] if Moves[move]['power']>0])
+  atk_pkm['Moves']= [move for move in atk_pkm['Moves'] if Moves[move]['power']>0]
 
   wt = len(atk_pkm['Moves'])
   HitsMatrix = [[100 for x in range(wt)] for y in range(ht)]
