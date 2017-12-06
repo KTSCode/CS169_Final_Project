@@ -98,9 +98,17 @@ def get_results(v, team_ids,atk_id):
         if(sum(sum(selected))<6):
             msg = "We cant fully process this pokemon, but these are suggestion"
             success = False
+
         return success, msg, [enemy,moves]
     except Exception as e:
         print(e)
         success = False
         msg = "We cant process this pokemon"
         return success, msg, []
+
+def random_runner():
+    exec(open('Pokemon.py').read())
+    Pokemon, Moves, Effectiveness = makeDicts()
+    atk_id, team_ids, v = randomArray()
+    s, msg, data = get_results(v,team_ids,atk_id)
+    return s, msg, data, atk_id, team_ids
