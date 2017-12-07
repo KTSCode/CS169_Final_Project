@@ -1,5 +1,7 @@
 import numpy as np
+from math import factorial as f
 import scipy.optimize as opt
+import matplotlib.pyplot as plt
 def make_EQ(I,J):
     tests = []
     values = []
@@ -93,34 +95,87 @@ def get_results(v, team_ids,atk_id):
     msg = ""
     try:
         success, x,v,k,c= make_solver(v)
-        selected = ((x+0.1)>1).astype(int)
-        enemy, moves = np.where(selected==1)
-        if(sum(sum(selected))<6):
-            msg = "We cant fully process this pokemon, but these are suggestion"
-            success = False
-
-        return success, msg, [enemy,moves,x]
     except Exception as e:
-        print(e)
+        #print(e)
         success = False
         msg = "We cant process this pokemon"
         return success, msg, []
+    selected = ((x+0.1)>1).astype(int)
+    enemy, moves = np.where(selected==1)
+    if(sum(sum(selected))<6):
+        msg = "We cant fully process this pokemon, but these are suggestion"
+        success = False
+    return success, msg, [enemy,moves,selected]
 
 def random_runner():
     exec(open('Pokemon.py').read())
     Pokemon, Moves, Effectiveness = makeDicts()
     atk_id, team_ids, v = randomArray()
     s, msg, data = get_results(v,team_ids,atk_id)
-    return s, msg, data, atk_id, team_ids
+    return s, msg, data, atk_id, team_ids, v
+def stat_collector(tests):
+    stats = {}
+    trials = list([])
+    for j in range(tests):
+        type_e = 0
+        s, msg, data, atk_id, teams_ids,v = random_runner()
+        if not s :
+            if len(data)==0:
+                type_e =2
+            else:
+                out = check_if_undecideable(data[2],v,data[0])
+                if (not len(out)==0) and ((len(out)==1 and len(out[0])>1) or (len(out)==2 and len(out[0])>1 and len(out[1])>1)):
+                    type_e = 1
+                else:
+                    type_e = 2
+        num_moves = len(Pokemon[atk_id]['Moves'])
+        trials.append({'atk_id':atk_id,'teams_ids':teams_ids,'type_r':type_e,'moves':num_moves})
+        stats[num_moves]=stats.get(num_moves,{'success':0,'total':0,'und':0})
+        stats[num_moves]['total']+=1
+        if(type_e == 0):
+            stats[num_moves]['success']+=1
+        elif(type_e == 1):
+            stats[num_moves]['und']+=1
+    return stats,trials
+def stat_interpreter(stats):
+    x=np.zeros(len(stats.keys()))
+    y=np.zeros(len(stats.keys()))
+    err = np.zeros(len(stats.keys()))
+    moves = findNumMoves()
+    comb = f(150) / f(6) / f(150-6)
+    print(comb)
+    for i,k in enumerate(sorted(stats.keys())):
+        x[i]=k
+        y[i]=stats[k]['success']/stats[k]['total']
+        print (x[i],y[i])
+        t =(stats[k]['success']+1/2)/(stats[k]['total']+1)
+        err[i]=np.sqrt(((1-t)*t)/(stats[k]['total']+1))
+    return x, y, err
+def make_plot(x,y,e):
+    plt.figure()
+    plt.errorbar(x,y,yerr=e,capthick=2)
+    plt.axis([0,40,0,1])
+    plt.ylabel('Success Rate to Generate Pokemon')
+    plt.xlabel('Number of Moves Possible')
+    plt.title('Changes in Success Rate Depending on Pokemon\'s Moveset')
+    plt.show()
+def gen_plot(tests):
+    stats, trials = stat_collector(tests)
+    x,y,e = stat_interpreter(stats)
+    make_plot(x,y,e)
+    return x,y,e
 def check_if_undecideable(selected, m, pokemon_killed):
     covered = [max(selected[:,i]) for i in range(len(selected[0]))]
-    if sum(sum(selected))<4:
-        return False
+    if sum(covered)<4:
+        return []
     missing = [n for n in np.arange(6) if not( n in pokemon_killed)]
+    solutions = []
     for missed in missing:
-        available = np.array([x for x in covered[missed]*m[missed] if x>0])
-        t = np.array(available==min(available)).astype(int)
+        available = np.array(covered[missed]*m[ missed])
+        if(sum(available)==0):
+            return []
+        minimum = np.min([x for x in available if x>0])
+        t = np.array(available==minimum).astype(int)
         count = sum(t)
-        if count>1:
-            return True
-    return False
+        solutions.append(np.where(available==minimum))
+    return solutions
