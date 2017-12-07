@@ -130,13 +130,13 @@ def hitsToKO(atk_pkm, def_pkm, move):
     defense = def_pkm['Special Defense']
     attack = atk_pkm['Special Attack']
   else:
-    return np.inf # notfound moves and status moves will never kill a pokemon
+    return 1e15 # notfound moves and status moves will never kill a pokemon
 
   level = 100
   # Calc Damage
   damage = damageCalc(level, move['power'], attack, defense, mod)
   if damage == 0:
-    return np.inf
+    return 1e10
   # Assuming all pokemons IVs are 31 and EVs are 0
   hp = ((def_pkm['HP'] * 2 + 31 ) * level / 100) + 10 + level
 
@@ -169,9 +169,10 @@ def genRandomTeam(max_pokemon=151, num =6):
 def genRandom(max_pokemon=151):
     num = randint(1,max_pokemon)
     return num, Pokemon[num]
-def randomArray(max_pokemon=151):
+def randomArray(max_pokemon=152):
     team_ids, Team = genRandomTeam(max_pokemon)
     atk_id, Pokem = genRandom(max_pokemon)
     return atk_id, team_ids, hitMatrixMaker(Team,Pokem)
 #print(np.array(hitMatrixMaker(Team, atk_pkm)))
   # print hitsToKO(Pokemon[randint(1,max_pokemon)], Pokemon[randint(1,max_pokemon)], Moves[randint(1,600)])
+makeDicts()
