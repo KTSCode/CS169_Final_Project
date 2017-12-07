@@ -99,7 +99,7 @@ def get_results(v, team_ids,atk_id):
             msg = "We cant fully process this pokemon, but these are suggestion"
             success = False
 
-        return success, msg, [enemy,moves]
+        return success, msg, [enemy,moves,x]
     except Exception as e:
         print(e)
         success = False
@@ -112,3 +112,15 @@ def random_runner():
     atk_id, team_ids, v = randomArray()
     s, msg, data = get_results(v,team_ids,atk_id)
     return s, msg, data, atk_id, team_ids
+def check_if_undecideable(selected, m, pokemon_killed):
+    covered = [max(selected[:,i]) for i in range(len(selected[0]))]
+    if sum(sum(selected))<4:
+        return False
+    missing = [n for n in np.arange(6) if not( n in pokemon_killed)]
+    for missed in missing:
+        available = np.array([x for x in covered[missed]*m[missed] if x>0])
+        t = np.array(available==min(available)).astype(int)
+        count = sum(t)
+        if count>1:
+            return True
+    return False

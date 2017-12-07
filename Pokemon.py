@@ -5,6 +5,9 @@ import numpy as np
 
 # Define dictionary of Pokemon return Pokemon, Moves, Effectiveness
 def makeDicts():
+    global Pokemon
+    global Moves
+    global Effectiveness
     Pokemon = {0: {'name': '', 'type1': 0, 'type2': 0,
       'Attack': 0, 'Defense': 0, 'Special Attack': 0, 'Special Defense': 0, 'HP': 0,
       'Moves': [0]}}
@@ -16,7 +19,6 @@ def makeDicts():
     typeNum = 19 #I'm lazy and didn't want to convert to start at 0
     Effectiveness = [[1 for x in range(typeNum)] for y in range(typeNum)]
 
-
     # Add names to pokemon dict
     with open('pokemon.csv', 'r') as csvfile:
       reader = csv.DictReader(csvfile   )
@@ -24,7 +26,7 @@ def makeDicts():
         if row['is_default'] == '1':
           Pokemon[int(row['id'])] = {'name': row['identifier'], 'type1': 0, 'type2': 0,
             'Attack': 1, 'Defense': 1, 'Special Attack': 1, 'Special Defense': 1, 'HP': 1,
-            'Moves': set([]) }
+            'Moves': [] }
 
     # Add types to pokemon dict
     with open('pokemon_types.csv', 'r') as csvfile:
@@ -57,12 +59,14 @@ def makeDicts():
     # Add moves to pokemon dict
     with open('pokemon_moves1.csv', 'r') as csvfile:
       reader = csv.DictReader(csvfile)
+      temp = {}
       for row in reader:
         ID = int(row['pokemon_id'])
+        temp[ID] = temp.get(ID,set([]))
         if ID < len(Pokemon):
-          Pokemon[ID]['Moves'].add(int(row['move_id']))
-      for pokemon_id in Pokemon:
-          Pokemon[ID]['Moves']=list(Pokemon[ID]['Moves'])
+          temp[ID].add(int(row['move_id']))
+      for pokemon_id in temp.keys():
+          Pokemon[pokemon_id]['Moves']=list(temp[pokemon_id])
 
     # Add moves to Moves dict
     with open('moves.csv', 'r') as csvfile:
@@ -165,7 +169,6 @@ def genRandomTeam(max_pokemon=151, num =6):
 def genRandom(max_pokemon=151):
     num = randint(1,max_pokemon)
     return num, Pokemon[num]
-
 def randomArray(max_pokemon=151):
     team_ids, Team = genRandomTeam(max_pokemon)
     atk_id, Pokem = genRandom(max_pokemon)
