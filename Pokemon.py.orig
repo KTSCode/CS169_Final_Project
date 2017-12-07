@@ -19,7 +19,6 @@ def makeDicts():
     typeNum = 19 #I'm lazy and didn't want to convert to start at 0
     Effectiveness = [[1 for x in range(typeNum)] for y in range(typeNum)]
 
-
     # Add names to pokemon dict
     with open('pokemon.csv', 'r') as csvfile:
       reader = csv.DictReader(csvfile   )
@@ -97,7 +96,6 @@ def makeDicts():
         if damage == 200:
           Effectiveness[damage_type][target_type] = 2
     return Pokemon, Moves, Effectiveness
-makeDicts()
 # Calculate damage done to a pokemon
 # int *args -> int
 def damageCalc(level, power, attack, defense, mod):
@@ -171,9 +169,14 @@ def genRandomTeam(max_pokemon=151, num =6):
 def genRandom(max_pokemon=151):
     num = randint(1,max_pokemon)
     return num, Pokemon[num]
+<<<<<<< HEAD
+def randomArray(max_pokemon=151):
+=======
 def randomArray(max_pokemon=152):
+>>>>>>> 1df6abb01006de9a135c3750e330e4c69117d559
     team_ids, Team = genRandomTeam(max_pokemon)
     atk_id, Pokem = genRandom(max_pokemon)
     return atk_id, team_ids, hitMatrixMaker(Team,Pokem)
 #print(np.array(hitMatrixMaker(Team, atk_pkm)))
   # print hitsToKO(Pokemon[randint(1,max_pokemon)], Pokemon[randint(1,max_pokemon)], Moves[randint(1,600)])
+makeDicts()
