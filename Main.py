@@ -10,8 +10,9 @@ def Options(random):
         print("Select a Format: ")
         print()
         print("\t1. 1v6" )
-        if random: print("\t2. 4v4")
-        if random: print("\t3. 1v4")
+        if random: print("\t2. 6v6")
+        if random: print("\t3. 4v4")
+        if random: print("\t4. 1v4")
         print("\t5. Go Back" )
         print()
         choice2 = input ("Enter the number of your selection: ")
@@ -23,8 +24,10 @@ def Options(random):
             else:
                 T.VSix(int(input ("Enter the id of the pokemon whose moveset you want to optimize: ")))
         elif choice2 == "2":
-            O.VFour(False)
+            O.SixVSix()
         elif choice2 == "3":
+            O.VFour(False)
+        elif choice2 == "4":
             O.VFour(True)
         else:
             print("I don't understand your choice.")

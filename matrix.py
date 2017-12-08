@@ -125,7 +125,18 @@ def get_results_movenames(v, team_ids,atk_id):
     if(sum(sum(selected))<6):
         msg = "We cant fully process this pokemon, but these are suggestion"
         success = False
-    return success,[enemy,move_ids]
+    return success,[enemy,moves,move_ids]
+def quick_results(team_ids, atk_id):
+    exec(open('Pokemon.py').read())
+    Pokemon, Moves, Effectiveness = makeDicts()
+    team = [Pokemon[enemy] for enemy in team_ids]
+    v = hitMatrixMaker(team,Pokemon[atk_id])
+    s, data =get_results_movenames(v, team_ids,atk_id)
+    enemy = data[0]
+    moves = data[1]
+    move_ids = data[2]
+    costs =[v[e,m] for e,m in zip(enemy,moves)]
+    return enemy, move_ids, costs
 def random_runner():
     exec(open('Pokemon.py').read())
     # Pokemon, Moves, Effectiveness = P.makeDicts()

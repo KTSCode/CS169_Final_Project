@@ -21,11 +21,16 @@ def n_vs_n(costs, moves, team, enemy, n):
         enemy = Enemy_of_4[i]['name']
         move_n = Pokemon.Moves[moves[ind][i]]['name']
         print("\tUse {} with {} on {}".format(move_n, pkm, enemy))
+# 6v6
+def SixVSix():
+    pokemon_rand = random.sample(range(1, 152), 12)
+    Team_of_6 = [Pokemon.Pokemon[i] for i in pokemon_rand[:4]]
+    Enemy_of_6 = [Pokemon.Pokemon[i] for i in pokemon_rand[4:]]
+    #TODO Add Code Here
 
 # 1V4 optimization
 
 def VFour(One):
-    global pokemon_rand
     pokemon_rand = random.sample(range(1, 152), 8)
     global Team_of_4
     Team_of_4 = [Pokemon.Pokemon[i] for i in pokemon_rand[:4]]
