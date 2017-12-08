@@ -141,23 +141,24 @@ def stat_interpreter(stats):
     x=np.zeros(len(stats.keys()))
     y=np.zeros(len(stats.keys()))
     err = np.zeros(len(stats.keys()))
-    moves = findNumMoves()
-    comb = f(150) / f(6) / f(150-6)
+    comb = f(151) / f(6) / f(151-6)
     print(comb)
     for i,k in enumerate(sorted(stats.keys())):
         x[i]=k
         y[i]=stats[k]['success']/stats[k]['total']
         print (x[i],y[i])
-        t =(stats[k]['success']+1/2)/(stats[k]['total']+1)
-        err[i]=np.sqrt(((1-t)*t)/(stats[k]['total']+1))
+        err[i]=calc_error(stats[k]['success'],stats[k]['total'])
     return x, y, err
+def calc_error(s,n):
+    t =(s+1/2)/(n+1)
+    return np.sqrt(((1-t)*t)/(n+1))
 def make_plot(x,y,e):
     plt.figure()
     plt.errorbar(x,y,yerr=e,capthick=2)
     plt.axis([0,40,0,1])
-    plt.ylabel('Success Rate to Generate Pokemon')
-    plt.xlabel('Number of Moves Possible')
-    plt.title('Changes in Success Rate Depending on Pokemon\'s Moveset')
+    plt.ylabel('Success Rate to Find Moves')
+    plt.xlabel('Number of Damaging Moves Available')
+    plt.title('Changes in Success Rate of Simplex Algorithm Depending on Pokemon\'s Moveset')
     plt.show()
 def gen_plot(tests):
     stats, trials = stat_collector(tests)
