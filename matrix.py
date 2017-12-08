@@ -106,7 +106,23 @@ def get_results(v, team_ids,atk_id):
         msg = "We cant fully process this pokemon, but these are suggestion"
         success = False
     return success, msg, [enemy,moves,selected]
-
+def get_results_movenames(v, team_ids,atk_id):
+    success = True
+    msg = ""
+    try:
+        success, x,v,k,c= make_solver(v)
+    except Exception as e:
+        #print(e)
+        success = False
+        msg = "We cant process this pokemon"
+        return success, msg, []
+    selected = ((x+0.1)>1).astype(int)
+    enemy, moves = np.where(selected==1)
+    move_ids = [Pokemon[atk_id]['Moves'][move] for move in moves]
+    if(sum(sum(selected))<6):
+        msg = "We cant fully process this pokemon, but these are suggestion"
+        success = False
+    return success,[enemy,move_ids]
 def random_runner():
     exec(open('Pokemon.py').read())
     Pokemon, Moves, Effectiveness = makeDicts()
